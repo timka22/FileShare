@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Мои файлы - FileShare{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>Мои файлы</h1>
+    <p class="subtitle">Управляйте загруженными файлами</p>
+    
+    {% if files|length == 0 %}
+    <div class="empty-state">
+        <p>У вас пока нет загруженных файлов.</p>
+        <a href="/" class="btn btn-primary">Загрузить файл</a>
+    </div>
+    {% else %}
+    <div class="files-list">
+        {% for file in files %}
+        <div class="file-card {% if file.is_expired or file.is_download_limit_reached %}expired{% endif %}">
+            <div class="file-header">
+                <h3>{{ file.filename }}</h3>
+                {% if file.is_expired %}
+                <span class="badge badge-expired">Истек</span>
+                {% elif file.is_download_limit_reached %}
+                <span class="badge badge-limit">Лимит</span>
+                {% else %}
+                <span class="badge badge-active">Активен</span>
+                {% endif %}
+            </div>
+            
+            <div class="file-details">
+                <div class="detail-item">
+                    <span class="detail-label">Токен:</span>
+                    <code class="token-small">{{ file.token }}</code>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Загружен:</span>
+                    <span>{{ file.created_at }}</span>
+                </div>
+                {% if file.expires_at %}
+                <div class="detail-item">
+                    <span class="detail-label">Истекает:</span>
+                    <span>{{ file.expires_at }}</span>
+                </div>
+                {% endif %}
+                {% if file.max_downloads %}
+                <div class="detail-item">
+                    <span class="detail-label">Скачиваний:</span>
+                    <span>{{ file.downloads_count }} / {{ file.max_downloads }}</span>
+                </div>
+                {% else %}
+                <div class="detail-item">
+                    <span class="detail-label">Скачиваний:</span>
+                    <span>{{ file.downloads_count }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="file-actions">
+                <a href="/download/{{ file.token }}" class="btn btn-small btn-outline">Открыть</a>
+                <a href="/file/{{ file.token }}/settings" class="btn btn-small btn-outline">⚙️ Настройки</a>
+                <form action="/delete/{{ file.token }}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-small btn-danger" onclick="return confirm('Удалить файл?')">Удалить</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,23 @@
+services:
+  file-service:
+    build: ./file_service
+    ports:
+      - "18000:8000"
+    volumes:
+      - ./file_service/uploads:/app/uploads
+      - ./file_service/data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:///./data/fileshare.db
+      - UPLOAD_DIR=./uploads
+    restart: unless-stopped
+
+  web-service:
+    build: ./web_service
+    ports:
+      - "18080:8080"
+    depends_on:
+      - file-service
+    environment:
+      - FILE_SERVICE_URL=http://file-service:8000
+    restart: unless-stopped
+

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Скачать файл - FileShare{% endblock %}
+
+{% block content %}
+<div class="download-container">
+    {% if is_expired %}
+    <div class="error-message">
+        <h2>⚠️ Файл истек</h2>
+        <p>Срок действия этого файла истек и он больше не доступен для скачивания.</p>
+    </div>
+    {% elif is_limit_reached %}
+    <div class="error-message">
+        <h2>⚠️ Лимит скачиваний достигнут</h2>
+        <p>Достигнут максимальный лимит скачиваний для этого файла.</p>
+    </div>
+    {% else %}
+    <h1>Скачать файл</h1>
+    
+    <div class="file-info-card">
+        <div class="file-header">
+            <h3>{{ file_info.filename }}</h3>
+            {% if is_owner %}
+            <a href="/file/{{ token }}/settings" class="btn btn-small btn-outline">⚙️ Настройки</a>
+            {% endif %}
+        </div>
+        <div class="info-row">
+            <span class="label">Загружен:</span>
+            <span>{{ file_info.created_at }}</span>
+        </div>
+        {% if file_info.expires_at %}
+        <div class="info-row">
+            <span class="label">Истекает:</span>
+            <span>{{ file_info.expires_at }}</span>
+        </div>
+        {% endif %}
+        {% if file_info.max_downloads %}
+        <div class="info-row">
+            <span class="label">Скачиваний:</span>
+            <span>{{ file_info.downloads_count }} / {{ file_info.max_downloads }}</span>
+        </div>
+        {% else %}
+        <div class="info-row">
+            <span class="label">Скачиваний:</span>
+            <span>{{ file_info.downloads_count }}</span>
+        </div>
+        {% endif %}
+    </div>
+    
+    <form action="/download/{{ token }}" method="post" class="download-form">
+        {% if requires_password %}
+        <div class="form-group">
+            <label for="password">Введите пароль:</label>
+            <input type="password" id="password" name="password" required class="form-input" placeholder="Пароль для доступа к файлу">
+        </div>
+        {% endif %}
+        
+        <button type="submit" class="btn btn-primary btn-large">
+            {% if requires_password %}
+            Разблокировать и скачать
+            {% else %}
+            Скачать файл
+            {% endif %}
+        </button>
+    </form>
+    {% endif %}
+    
+    <div class="back-link">
+        <a href="/">← Вернуться на главную</a>
+    </div>
+</div>
+{% endblock %}
+

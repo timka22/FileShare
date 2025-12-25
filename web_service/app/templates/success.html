@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Файл загружен - FileShare{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-icon">✓</div>
+    <h1>Файл успешно загружен!</h1>
+    
+    <div class="file-info-card">
+        <h3>{{ file_info.filename }}</h3>
+        <div class="info-row">
+            <span class="label">Токен:</span>
+            <code class="token">{{ file_info.token }}</code>
+        </div>
+        {% if file_info.expires_at %}
+        <div class="info-row">
+            <span class="label">Истекает:</span>
+            <span>{{ file_info.expires_at }}</span>
+        </div>
+        {% endif %}
+        {% if file_info.max_downloads %}
+        <div class="info-row">
+            <span class="label">Лимит скачиваний:</span>
+            <span>{{ file_info.max_downloads }}</span>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="link-box">
+        <label>Ссылка для скачивания:</label>
+        <div class="link-input-group">
+            <input type="text" id="download-link" value="{{ download_url }}" readonly class="link-input">
+            <button onclick="copyLink()" class="btn btn-secondary">Копировать</button>
+            <a href="{{ download_url }}" class="btn btn-primary">Открыть файл</a>
+        </div>
+    </div>
+    
+    {% if not is_authenticated %}
+    <div class="registration-promo">
+        <h3>💡 Хотите управлять своими файлами?</h3>
+        <p>Зарегистрируйтесь или войдите, чтобы:</p>
+        <ul>
+            <li>✓ Видеть все свои файлы в одном месте</li>
+            <li>✓ Управлять настройками файлов</li>
+            <li>✓ Продлевать срок действия</li>
+            <li>✓ Менять пароли и лимиты</li>
+        </ul>
+        <div class="promo-actions">
+            <a href="/register" class="btn btn-primary">Регистрация</a>
+            <a href="/login" class="btn btn-outline">Вход</a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="actions">
+        <a href="/" class="btn btn-primary">Загрузить еще</a>
+        {% if is_authenticated %}
+        <a href="/dashboard" class="btn btn-outline">Мои файлы</a>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function copyLink() {
+    const input = document.getElementById('download-link');
+    input.select();
+    document.execCommand('copy');
+    
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = 'Скопировано!';
+    btn.classList.add('copied');
+    
+    setTimeout(() => {
+        btn.textContent = originalText;
+        btn.classList.remove('copied');
+    }, 2000);
+}
+</script>
+{% endblock %}
+

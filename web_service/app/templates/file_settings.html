@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Настройки файла - FileShare{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <h1>⚙️ Настройки файла</h1>
+    
+    <div class="file-info-card">
+        <h3>{{ file_info.filename }}</h3>
+        <div class="info-row">
+            <span class="label">Токен:</span>
+            <code class="token-small">{{ file_info.token }}</code>
+        </div>
+        <div class="info-row">
+            <span class="label">Загружен:</span>
+            <span>{{ file_info.created_at }}</span>
+        </div>
+        {% if file_info.expires_at %}
+        <div class="info-row">
+            <span class="label">Истекает:</span>
+            <span>{{ file_info.expires_at }}</span>
+        </div>
+        {% endif %}
+        {% if file_info.max_downloads %}
+        <div class="info-row">
+            <span class="label">Скачиваний:</span>
+            <span>{{ file_info.downloads_count }} / {{ file_info.max_downloads }}</span>
+        </div>
+        {% else %}
+        <div class="info-row">
+            <span class="label">Скачиваний:</span>
+            <span>{{ file_info.downloads_count }}</span>
+        </div>
+        {% endif %}
+    </div>
+    
+    <form action="/file/{{ token }}/settings" method="post" class="settings-form">
+        <div class="form-section">
+            <h3>🔒 Пароль</h3>
+            {% if file_info.has_password %}
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="remove_password" value="true" id="removePassword">
+                    Удалить пароль
+                </label>
+            </div>
+            {% endif %}
+            <div class="form-group">
+                <label for="password">
+                    {% if file_info.has_password %}
+                    Изменить пароль:
+                    {% else %}
+                    Установить пароль:
+                    {% endif %}
+                </label>
+                <input type="password" id="password" name="password" class="form-input" placeholder="Оставьте пустым, чтобы не менять">
+                <p class="form-help">Пароль защитит файл от несанкционированного доступа</p>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>📅 Срок действия</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="expires_days">Дни:</label>
+                    <input type="number" id="expires_days" name="expires_days" min="0" class="form-input" placeholder="Например: 7">
+                </div>
+                <div class="form-group">
+                    <label for="expires_hours">Часы:</label>
+                    <input type="number" id="expires_hours" name="expires_hours" min="0" class="form-input" placeholder="Например: 24">
+                </div>
+            </div>
+            <p class="form-help">Оставьте пустым, чтобы не менять. Установите 0 для обоих полей, чтобы убрать срок действия.</p>
+        </div>
+        
+        <div class="form-section">
+            <h3>📊 Лимит скачиваний</h3>
+            <div class="form-group">
+                <label for="max_downloads">Максимальное количество скачиваний:</label>
+                <input type="number" id="max_downloads" name="max_downloads" min="1" class="form-input" placeholder="Оставьте пустым, чтобы убрать лимит">
+                <p class="form-help">После достижения лимита файл станет недоступен</p>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">💾 Сохранить изменения</button>
+            <a href="/download/{{ token }}" class="btn btn-outline">← Вернуться к файлу</a>
+            <a href="/dashboard" class="btn btn-outline">📁 Мои файлы</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

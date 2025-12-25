@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FileShare{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">FileShare</a>
+            <div class="nav-links">
+                <a href="/">Загрузить</a>
+                <a href="/dashboard">Мои файлы</a>
+                {% if is_authenticated %}
+                <div class="user-info">
+                    <span class="username">👤 {{ username }}</span>
+                    <form action="/logout" method="post" class="logout-form">
+                        <button type="submit" class="btn-logout">Выход</button>
+                    </form>
+                </div>
+                {% else %}
+                <a href="/login" class="nav-link">Вход</a>
+                <a href="/register" class="btn btn-secondary btn-small">Регистрация</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 FileShare - Простой сервис для обмена файлами</p>
+        </div>
+    </footer>
+</body>
+</html>
+
